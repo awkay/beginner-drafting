@@ -1,0 +1,8 @@
+= Basic Demo
+
+This repository contains some demo code that shows
+a very naive way of doing a React app with Clojurescript. It
+is meant as a teaching tool for moving towards Fulcro.
+
+I use this for my own teaching purposes. It really isn't meant
+for public consumption, but you're welcome to play with it.
