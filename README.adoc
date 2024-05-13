@@ -6,3 +6,27 @@ is meant as a teaching tool for moving towards Fulcro.
 
 I use this for my own teaching purposes. It really isn't meant
 for public consumption, but you're welcome to play with it.
+
+== Starting the Basic Demo
+
+[source, bash]
+-----
+$ npm install
+$ npx shadow-cljs server
+-----
+
+Go to http://localhost:9630/builds and start all of the builds.
+
+Go to http://localhost:8081 for the naive project
+
+Go to http://localhost:8080 for the regular Fulcro project
+
+Go to http://localhost:8022 for the tests
+
+== Recommendations
+
+* Use Google Chrome
+* Install the Fulcro Inspect extension
+* Turn on "Custom Formatters" in the Devtools Preferences
+* Open developer tools, and on the Network tab, Disable Cache. Now
+when devtools is open you'll be sure to get fresh versions of compiled sources.
