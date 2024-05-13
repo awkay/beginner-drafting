@@ -28,5 +28,3 @@ Go to http://localhost:8022 for the tests
 * Use Google Chrome
 * Install the Fulcro Inspect extension
 * Turn on "Custom Formatters" in the Devtools Preferences
-* Open developer tools, and on the Network tab, Disable Cache. Now
-when devtools is open you'll be sure to get fresh versions of compiled sources.

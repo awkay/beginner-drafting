@@ -1,12 +1,8 @@
 {
-    "name": "blackjack",
+    "name": "project",
     "version": "1.0.0",
     "description": "",
     "private": true,
-    "dependencies": {
-        "highlight.js": "9.18.5",
-        "react-grid-layout": "0.16.6"
-    },
     "devDependencies": {
         "react": "^17.0.1",
         "react-dom": "^17.0.1",
