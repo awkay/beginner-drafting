@@ -19,14 +19,15 @@
                                   (= id (:id (second n))))))
     hiccup))
 
-(defn element->hiccup [element] #?(:clj (first (html->hiccup (dom/render-to-str element)))))
+(defn element->hiccup [element]
+  #?(:clj
+     (sp/transform
+       (sp/walker map?)
+       (fn [m] (dissoc m :data-reactroot :data-reactid :data-react-checksum))
+       (first (html->hiccup (dom/render-to-str element))))))
 
 (defn render-element [element]
-  (pprint
-    (sp/transform
-      (sp/walker map?)
-      (fn [m] (dissoc m :data-reactroot :data-reactid :data-react-checksum))
-      (element->hiccup element))))
+  (pprint (element->hiccup element)))
 
 (defn render-app-element [{::app/keys [state-atom runtime-atom]} id]
   (let [state-map @state-atom
@@ -36,6 +37,12 @@
     (-> (root-factory tree)
       (element->hiccup)
       (hiccup-element-by-id id))))
+
+(defn click-on! [app id]
+  #?(:clj
+     (let [[_ {:keys [onClick]}] (render-app-element app id)
+           txn (when (string? onClick) (some-> onClick read-string))]
+       (comp/transact! app txn))))
 
 (defn build-app
   ([] (build-app (volatile! true)))
