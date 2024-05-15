@@ -43,23 +43,36 @@
   (dom/div
     (mapv ui-list lists)))
 
+(defn numbered-name
+  "Generates a string based on nm that has a number appended which
+   will likely be different each time you call it."
+  [nm]
+  (str nm "-" (mod (long (/ (dt/now-ms) 100)) 10000)))
+
 (comment
-  (render-app-element SPA "item3")
-  (click-on! SPA "item4-checkbox")
   (reset! render-data? false)
   (reset! render-data? true)
+
+  (app/mount! SPA Root :ignored)
   (reset! (::app/state-atom SPA) {})
-  (app/mount! SPA Root :k)
+
   (app/schedule-render! SPA {:force-root? true})
-  (comp/transact! SPA (read-string "[(app.apis.todo/set-complete #:item{:id 4, :complete? false})]"))
-  (merge/merge-component! SPA Item {:item/id 1 :item/label "A"})
+
+  (merge/merge-component! SPA Item {:item/id 99 :item/label "A"})
+
   (app/current-state SPA)
-  (comp/transact! SPA [(todo/set-complete {:item/id 3 :item/complete? true})])
-  (comp/transact! SPA [(todo/create-list {:list/title (str "List" (mod (long (/ (dt/now-ms) 100)) 10000))})])
+
+  (comp/transact! SPA [(todo/set-complete {:item/id 3 :item/complete? false})])
+  (comp/transact! SPA [(todo/create-list {:list/title (numbered-name "List")})])
   (comp/transact! SPA [(todo/append-item {:list/id    1
-                                          :item/label (str "Item" (mod (long (/ (dt/now-ms) 100)) 10000))})])
+                                          :item/label (numbered-name "Item")})])
   (df/load! SPA :all-lists TodoList {:target [:todo/lists]})
   (df/load! SPA :todo/list TodoList {:params {:list/id 11}
                                      :target (target/append-to [:todo/lists])})
   (app/schedule-render! SPA {:force-root? true})
+
+  (render-app-element SPA "item3")
+
+  (comp/transact! SPA (read-string "[(app.apis.todo/set-complete #:item{:id 4, :complete? false})]"))
+  (click-on! SPA "item4-checkbox")
   )

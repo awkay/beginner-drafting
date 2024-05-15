@@ -9,7 +9,7 @@ for public consumption, but you're welcome to play with it.
 
 == Starting the Basic Demo
 
-[source, bash]
+[source,bash]
 -----
 $ npm install
 $ npx shadow-cljs server
@@ -28,3 +28,92 @@ Go to http://localhost:8022 for the tests
 * Use Google Chrome
 * Install the Fulcro Inspect extension
 * Turn on "Custom Formatters" in the Devtools Preferences
+
+== Lesson Plan
+
+=== Session 1
+
+Plain React with Atoms
+
+* `demo.cljs` namespace
+* Progression of "immutable world states" as a model of an application.
+* Pure rendering of that state.
+* Problems?
+
+==== Exercises
+
+Run the `demo` build in shadow-cljs, and use the localhost:8081. This isn't a Fulcro
+app, so Fulcro Inspect won't work.
+
+. Write onClick handlers that will allow the user to put in, or remove from,
+the ban lists.
+. Fix the bug that happens when clicking on an empty pick square.
+
+=== Session 2
+
+Lean into the Data!
+
+In this session we're going to avoid actually using a browser at all. The intention
+is to shift your thinking away from what you see on the screen, to the data. Fulcro
+is a (mostly) pure `View = F(data)`, and `F` is a pure function. Getting the data
+right is way more important that the view.
+
+So, still no Fulcro Inspect (but it's easy to dump the state atom).
+
+* Fulcro can be used "headless" in CLJ (or you could write a renderer for Desktop apps?)
+* Overview of Operation (see new diagrams in book)
+* Refresher on Normalized Database Form
+* EQL, and what is a Fulcro Remote?
+* Quick overview of namespace `app.sample-servers.registry`
+* Cover all aspects of the TODO app.
+
+==== Exercises
+
+These should all be done via a Clojure REPL.
+
+In the exercises below, an "optimistic" operation is one that changes the
+local state of the app database (e.g. an `action` section of a mutation).
+Operations that are *not* optimistic can update the local database in one of two
+ways: They can have the mutation return the newly-affected subtree from the server
+(which will merge over top of things and cause the patch), or they can use the
+`ok-action` section of the mutation to do it after the server is done.
+
+. Make the rendered lists have the items sorted by label.
+** Question: Should you do this via state modifications or pure rendering? Try
+it both ways. HINT: See also `com.fulcrologic.fulcro.algorithms.normalized-state/sort-idents-by`
+. Add a mutation that can delete an item (full stack, but not optimistic)
+** Try it using `returning` in the `remote`.
+** Try it using `ok-action`.
+. Add a mutation that can delete a list (full stack, optimistic)
+** Question: What should you do if the full-stack operation has an error? Can
+you propose a specific set of steps that would work to fix this problem?
+HINT: There are at least two good solutions: a kind of stupid simple one, and
+one that takes a bit more effort.
+
+=== Session 3
+
+Fulcro Form State
+
+* Forms as a Sequence of Application States
+* Anatomy of a form
+* What do you need?
+** Fields vs. aux data
+** Dirty vs. Clean
+** Unchecked vs. Valid vs. Invalid
+** Pristine vs. Live/Modified Entity
+*** Undo/Reset: `pristine->entity*`
+*** Commit: `entity->pristine*`
+* Normalized Form config
+* Validation
+* Normalized form minimal diffs
+
+==== Exercises
+
+. Assume we're using native IDs in datascript (e.g. the id in an ident is actually a :db/id). Write a `save-form` mutation for the "server side" that can convert a minimal form diff (don't worry about refs or cardinality many just yet) into a Datascript transaction and run it.
+** Question: If you were using SQL, would it be much harder? How about a key-value store?
+. Use the CLJ REPL to edit your Person form to a point where it is dirty, but valid, and try out your new mutation.
+. Question: Assume two users from two browsers loaded the same entity at the same time. Then they changed different fields, and then saved at different times. How does Fulcro's minimal diff behave differently than a typical "Save it all" JSON approach?
+
+=== Session 4
+
+=== Session 5

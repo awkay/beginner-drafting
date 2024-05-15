@@ -23,7 +23,6 @@
              env          (assoc env :query-params query-params)]
          (parser env tx))))})
 
-
 (def resolvers (atom {}))
 
 (defn register! [k resolver]
@@ -59,10 +58,7 @@
                           query-params-to-env-plugin]}))
 
 (defn mock-http-server
-  "Create a remote that mocks a Fulcro remote server.
-
-  :parser - A function `(fn [eql-query] async-channel)` that returns a core async channel with the result for the
-  given eql-query."
+  "Create a remote that mocks a Fulcro remote server."
   []
   (let [parser   (build-eql-processor)
         run-eql! (fn [tx] (parser {} tx))]
