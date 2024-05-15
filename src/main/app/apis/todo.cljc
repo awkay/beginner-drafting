@@ -28,7 +28,18 @@
   (remote [env]
     (-> env
       (m/with-target (target/append-to [:todo/lists]))
-      (m/returning 'app.todo/List))))
+      (m/returning 'app.todo/TodoList))))
+
+(m/defmutation set-complete [{:item/keys [id complete?]}]
+  (action [{:keys [state]}]
+    (swap! state assoc-in [:item/id id :item/complete?] (boolean complete?)))
+  (remote [_] true))
+
+(defmutation set-complete-server [_ {:item/keys [id complete?]}]
+  {::pc/sym `set-complete}
+  (println "Server toggle item")
+  (d/transact db/conn [[:db/add id :item/complete? (boolean complete?)]])
+  nil)
 
 (defmutation create-list-server [_ {:list/keys [title]}]
   {::pc/sym    `create-list
@@ -68,7 +79,7 @@
 
 (m/defmutation append-item [{:list/keys [id]
                              :item/keys [label]}]
-  (remote [env] (m/returning env 'app.todo/List)))
+  (remote [env] (m/returning env 'app.todo/TodoList)))
 
 (defmutation append-item-server [env {list-id    :list/id
                                       :item/keys [label] :as new-item}]

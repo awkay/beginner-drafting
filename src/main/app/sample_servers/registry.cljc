@@ -2,13 +2,27 @@
   #?(:cljs (:require-macros app.sample-servers.registry))
   (:require
     [com.fulcrologic.fulcro.algorithms.tx-processing :as txn]
-    [com.fulcrologic.rad.pathom :refer [query-params-to-env-plugin]]
     [com.wsscode.pathom.connect :as pc]
     [com.wsscode.pathom.core :as p]
-    [clojure.core.async :as async]
     [edn-query-language.core :as eql]
     [taoensso.encore :as enc]
     [taoensso.timbre :as log]))
+
+(def query-params-to-env-plugin
+  "Adds top-level load params to env, so nested parsing layers can see them."
+  {::p/wrap-parser
+   (fn [parser]
+     (fn [env tx]
+       (let [children     (-> tx eql/query->ast :children)
+             query-params (reduce
+                            (fn [qps {:keys [type params] :as x}]
+                              (cond-> qps
+                                (and (not= :call type) (seq params)) (merge params)))
+                            {}
+                            children)
+             env          (assoc env :query-params query-params)]
+         (parser env tx))))})
+
 
 (def resolvers (atom {}))
 
