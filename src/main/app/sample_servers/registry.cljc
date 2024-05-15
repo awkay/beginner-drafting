@@ -52,15 +52,11 @@
           (register! (quote ~sym) ~sym)))))
 
 (defn build-eql-processor []
-  (p/parser {::p/env    {::p/reader [p/map-reader
-                                     p/ident-join-reader
-                                     pc/reader2]}
-             ::p/mutate pc/mutate
-             ::p/plugins
-             [(pc/connect-plugin
-                {::pc/register (vals @resolvers)})
-              (p/post-process-parser-plugin p/elide-not-found)
-              query-params-to-env-plugin]}))
+  (p/parser {::p/env     {::p/reader [p/map-reader p/ident-join-reader pc/reader2]}
+             ::p/mutate  pc/mutate
+             ::p/plugins [(pc/connect-plugin {::pc/register (vals @resolvers)})
+                          (p/post-process-parser-plugin p/elide-not-found)
+                          query-params-to-env-plugin]}))
 
 (defn mock-http-server
   "Create a remote that mocks a Fulcro remote server.
