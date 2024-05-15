@@ -44,6 +44,14 @@
            txn (when (string? onClick) (some-> onClick read-string))]
        (comp/transact! app txn))))
 
+(defn txn-handler
+  "A CLJC function for running transactions as handlers. In CLJ emits the transaction as a string. In CLJS it
+   emits a fn."
+  [app-ish txn]
+  #?(:clj  (str txn)
+     :cljs (fn [] (comp/transact! app-ish txn))))
+
+
 (defn build-app
   ([] (build-app (volatile! true)))
   ([render-data-atom?]

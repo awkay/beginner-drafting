@@ -10,22 +10,18 @@
     [com.fulcrologic.fulcro.algorithms.merge :as merge]
     [com.fulcrologic.fulcro.algorithms.data-targeting :as target]
     [com.fulcrologic.rad.type-support.date-time :as dt]
-    [app.application :refer [build-app render-app-element click-on!]]))
+    [app.application :refer [build-app render-app-element click-on! txn-handler]]))
 
 (defonce render-data? (atom false))
 (defonce SPA (build-app render-data?))
-
-(defn run-txn [app-ish txn]
-  #?(:clj  (str txn)
-     :cljs (fn [] (comp/transact! app-ish txn))))
 
 (defsc Item [this {:item/keys [id label complete?]}]
   {:query [:item/id :item/label :item/complete?]
    :ident :item/id}
   (dom/div {:id (str "item" id)}
     (dom/input {:type    "checkbox"
-                :id (str "item" id "-checkbox")
-                :onClick (run-txn this [(todo/set-complete {:item/id id :item/complete? (not complete?)})])
+                :id      (str "item" id "-checkbox")
+                :onClick (txn-handler this [(todo/set-complete {:item/id id :item/complete? (not complete?)})])
                 :checked (boolean complete?)})
     (dom/span (str label))))
 
