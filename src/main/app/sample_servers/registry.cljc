@@ -1,6 +1,7 @@
 (ns app.sample-servers.registry
   #?(:cljs (:require-macros app.sample-servers.registry))
   (:require
+    [clojure.core.async :as async]
     [com.fulcrologic.fulcro.algorithms.tx-processing :as txn]
     [com.wsscode.pathom.connect :as pc]
     [com.wsscode.pathom.core :as p]
@@ -75,8 +76,10 @@
                                           e
                                           (log/error e "Error handler failed with an exception. See https://book.fulcrologic.com/#err-msr-err-handler-exc")))]
                     (enc/catching
-                      (let [result (run-eql! edn)]
-                        (ok-handler {:transaction edn :status-code 200 :body result}))
+                      (async/go
+                        (async/<! (async/timeout 1000))
+                        (let [result (run-eql! edn)]
+                          (ok-handler {:transaction edn :status-code 200 :body result})))
                       e
                       (do
                         (log/error e "Server error")
