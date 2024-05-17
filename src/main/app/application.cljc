@@ -1,8 +1,8 @@
 (ns app.application
   (:require
     #?(:cljs [com.fulcrologic.fulcro.dom :as dom]
-       :clj  [clojure.string :as str]
-       [com.fulcrologic.fulcro.dom-server :as dom])
+       :clj  [com.fulcrologic.fulcro.dom-server :as dom])
+    [clojure.string :as str]
     [clojure.pprint :refer [pprint]]
     [app.sample-servers.registry :refer [mock-http-server]]
     [com.fulcrologic.fulcro.application :as app]
@@ -43,7 +43,7 @@
   #?(:clj
      (let [[_ {:keys [onClick]}] (render-app-element app id)
            onClick (str/replace onClick "&quot;" "\"")
-           txn (when (string? onClick) (some-> onClick read-string))]
+           txn     (when (string? onClick) (some-> onClick read-string))]
        (comp/transact! app txn))))
 
 (defn txn-handler

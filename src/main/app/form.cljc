@@ -1,6 +1,7 @@
 (ns app.form
   (:require
     #?(:cljs [com.fulcrologic.fulcro.dom :as dom] :clj [com.fulcrologic.fulcro.dom-server :as dom])
+    [com.fulcrologic.fulcro.routing.dynamic-routing :as dr]
     [app.application :refer [build-app txn-handler click-on!]]
     [app.apis.form :as api.form]
     [app.sample-servers.registry]
@@ -13,6 +14,7 @@
     [com.fulcrologic.fulcro.data-fetch :as df]
     [com.fulcrologic.fulcro.components :as comp :refer [defsc]]
     [com.fulcrologic.fulcro.mutations :as m]))
+
 
 (defonce render-data? (atom false))
 (defonce SPA (build-app render-data?))
@@ -87,9 +89,28 @@
   (comp/transact! SPA [(fs/reset-form! {:form-ident [:person/id 1]})])
 
   (click-on! SPA "save")
-  (pr-str "\"a\"")
-  (read-string (str/replace "[(app.apis.form/save {[:person/id 1] #:person{:last-name {:before &quot;Farth&quot;, :after &quot;New&quot;}}})]"
-     "&quot;" "\""))
+
+  1. Which things are part of the form???
+  2. When to show validation messages (tri-state)
+    * Per-field basis, which things are valid?
+    * On a form bases: is entire FORM is ok?
+  5. WHAT do we send to the server on save???
+    * Minimal diff?  JUST the fields that are necessary <-----
+    ** REQUIRES: make a copy of the entity at the start.
+    ** What about new things? Everything!
+    ** need a way to detect what is new?
+       Person
+          Street ...
+          cars -> [.... {new car}] ; 2 changes: cars now points to one MORE thing, AND new car
+  6. nice to have: revert in-memory changes back to old version.
+     * Cached version of where we began. <-----
+     ** REVERT by putting from that CACHED COPY
+
+  Steps to build ANYTHING in Fulcro:
+  1. Figure out your data
+  2. How will you put that data IN Fulcro
+  3. How will do get the data back out
+  4. What algs do you need to manipulate that data?
 
   (clojure.pprint/pprint (app/current-state SPA))
   (app/schedule-render! SPA {:force-root? true}))
